@@ -1,5 +1,6 @@
 package loginPage;
 
+import java.util.List;
 import java.util.Random;
 
 import org.openqa.selenium.By;
@@ -16,13 +17,16 @@ public class myTestCases {
 	String SignUp = "https://automationteststore.com/index.php?rt=account/create";
 	Random rand = new Random();
 
+	String TheUserName;
+	String ThePassword = "Test@1234";
+
 	@BeforeTest
 	public void SignUp() {
 		driver.get(theURL);
 		driver.manage().window().maximize();
 	}
 
-	@Test(priority = 1)
+	@Test(priority = 1, enabled = true)
 	public void SignUP() throws InterruptedException {
 		driver.navigate().to(SignUp);
 
@@ -46,11 +50,11 @@ public class myTestCases {
 		WebElement StatSelect = driver.findElement(By.id("AccountFrm_zone_id"));
 
 		// Data
-		String[] FirstNames = { "hatem", "anas", "ali", "tarek" };
+		String[] FirstNames = { "amira", "rogina", "dana", "mais", "dareen" };
 		int RandomIndexForFirstName = rand.nextInt(FirstNames.length);
 		String randomFirstName = FirstNames[RandomIndexForFirstName];
 
-		String[] LastNames = { "mosa", "saab", "jul", "mars" };
+		String[] LastNames = { "alaa", "saif", "abduallah", "hamzeh", "marwan", "abdelraheem", "omar" };
 		int RandomIndexForLastName = rand.nextInt(LastNames.length);
 		String randomLastName = LastNames[RandomIndexForLastName];
 
@@ -64,9 +68,11 @@ public class myTestCases {
 		String City = "huissen";
 
 		String PostalCode = "6844";
-		String Password = "Test@1234";
 
 		// Actions
+
+		TheUserName = randomFirstName + randomLastName + randomNumberForTheEmail;
+
 		FirstNameInput.sendKeys(randomFirstName);
 		LastNameInput.sendKeys(randomLastName);
 		EmailInput.sendKeys(Email);
@@ -93,17 +99,60 @@ public class myTestCases {
 		// int randomStateSelect = rand.nextInt(1,numberOfOptions);
 		// mySelectForTheState.selectByValue("1705");
 
-		// Select mySelectForTheState = new Select(StatSelect);
-		// int randomStateSelect = rand.nextInt(1,numberOfOptions);
-		// mySelectForTheState.selectByVisibleText("");
-
 		PostalCodeInput.sendKeys(PostalCode);
-		LoginNameInput.sendKeys(randomFirstName + randomLastName + randomNumberForTheEmail);
-		PasswordInput.sendKeys(Password);
-		PasswordConfirmInput.sendKeys(Password);
+		LoginNameInput.sendKeys(TheUserName);
+		PasswordInput.sendKeys(ThePassword);
+		PasswordConfirmInput.sendKeys(ThePassword);
 		agreeBox.click();
 		ContinueButton.click();
 
+		Thread.sleep(3000);
+
 	}
+
+	@Test(priority = 2, enabled = true)
+	public void Logout() throws InterruptedException {
+		WebElement LogoutButton = driver.findElement(By.linkText("Logoff"));
+		LogoutButton.click();
+		Thread.sleep(1000);
+		WebElement continueButton = driver.findElement(By.linkText("Continue"));
+		continueButton.click();
+
+	}
+
+	@Test(priority = 3, enabled = true)
+	public void Login() {
+		WebElement LoginAndRegisterButton = driver.findElement(By.partialLinkText("Login or"));
+		LoginAndRegisterButton.click();
+		WebElement Loginname = driver.findElement(By.id("loginFrm_loginname"));
+		WebElement passwordInput = driver.findElement(By.id("loginFrm_password"));
+		Loginname.sendKeys(TheUserName);
+		passwordInput.sendKeys(ThePassword);
+		WebElement LoginButton = driver.findElement(By.xpath("//button[normalize-space()='Login']"));
+		LoginButton.click();
+
+	}
+
+	@Test(priority = 4,invocationCount=1)
+	public void AddToCart() throws InterruptedException {
+		driver.navigate().to(theURL);
+		Thread.sleep(1000);
+	//	WebElement theItemsContainer = driver.findElement(By.cssSelector("section[id='latest'] div[class='container-fluid']"));
+	//	int numberOfItems = theItemsContainer.findElement(By.cssSelector(".thumbnails.list-inline")).findElements(By.tagName("div")).size();
+	//	System.out.println(numberOfItems);
+		
+		List<WebElement> theListOfItems = driver.findElements(By.className("prdocutname"));
+		
+		int TotalNumberOfItems =theListOfItems.size();
+		System.out.println(TotalNumberOfItems);
+		int RandomItemIndex = rand.nextInt(2);
+		theListOfItems.get(RandomItemIndex).click();
+		Thread.sleep(3000);
+		if(driver.getPageSource().contains("Out of Stock")) {driver.navigate().back();
+		System.out.println("sorry the item out of the stock");
+	    }else {
+		System.out.println("the item is available");}
+		
+	} 
 
 }
